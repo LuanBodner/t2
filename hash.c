@@ -8,7 +8,11 @@
 
 bool hash_ehValida(Hash *h) { return (h != NULL ? true : false); }
 
-int hash_funcao(Hash *h, int chave) { return chave % h->tamanho; }
+int hash_funcao2(Hash *h, int chave) {
+    return (int)(50000 * ((chave * 0.61235) - (int)(chave * 0.61235)));
+}
+
+int hash_funcao1(Hash *h, int chave) { return chave % h->tamanho; }
 
 /**************************************
  * IMPLEMENTAÇÃO
@@ -46,10 +50,10 @@ int double_hash(Hash *h, int sp) {
 }
 
 int quad_probe(Hash *h, int sp) {
-    int fp = sp, c1 = 1, c2 = 2, i = 0, start = 1;
+    int fp = sp, c1 = 1, c2 = 1, i = 1, start = 1;
 
     while (h->itens[fp] != NULL) {
-        fp = fp + (c1 * i) + (c2 * pow(i, 2));
+        fp = fp + c1 * i + c2 * pow(i, 2);
         i++;
         if (h->tamanho <= fp) fp = start++;
     }
@@ -67,17 +71,20 @@ int linear_probe(Hash *h, int sp) {
     return fp;
 }
 
-bool hash_inserir(Hash *h, TipoElemento *elemento) {
-    int pos = hash_funcao(h, elemento->chave);
-    if (h->itens[pos] != NULL) pos = double_hash(h, pos);
+bool hash_inserir(Hash *h, TipoElemento *elemento, int *counter) {
+    int pos = hash_funcao1(h, elemento->chave);
+    if (h->itens[pos] != NULL) {
+        pos = double_hash(h, pos);
+        if (pos >= h->tamanho) pos = pos - h->tamanho;
+    }
     h->itens[pos] = elemento;
     h->qtde++;
     return true;
 }
 
 bool hash_remover(Hash *h, int chave, TipoElemento **elemento) {
-    int pos = hash_funcao(h, chave);
-    if (h->itens[pos] != NULL) pos = double_hash(h, pos);
+    int pos = hash_funcao1(h, chave);
+    if (h->itens[pos] != NULL) pos = linear_probe(h, pos);
 
     *elemento = h->itens[pos];
     h->itens[pos] = NULL;
@@ -96,21 +103,17 @@ bool hash_vazio(Hash *ha) {
 }
 
 void hash_imprimir(Hash *h) {
-    printf("Qtd: %d\n", h->qtde);
-
     printf("[");
     for (int i = 0; i < h->tamanho - 1; i++) {
-        if (h->itens[i] != NULL) {
-            printf("%d, ", h->itens[i]->chave);
-        } else {
-            printf("NULL, ");
-        }
+        if (h->itens[i] != NULL)
+            printf("X");
+        else
+            printf(" ");
     }
-    if (h->itens[h->tamanho - 1] != NULL) {
-        printf("%d", h->itens[h->tamanho - 1]->chave);
-    } else {
-        printf("NULL");
-    }
+    if (h->itens[h->tamanho - 1] != NULL)
+        printf("X");
+    else
+        printf(" ");
 
     printf("]\n");
 }

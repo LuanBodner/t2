@@ -2,6 +2,5 @@ make --dry-run --keep-going --print-directory
 make: Entering directory '/home/luan/Documents/Masters/T2/Hash table'
 gcc -c hash.c
 gcc main.c hash.o -o main -lm
-./main 500
 make: Leaving directory '/home/luan/Documents/Masters/T2/Hash table'
  

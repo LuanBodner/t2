@@ -15,24 +15,13 @@ int randomInteger(int low, int high) {
 int teste1(int argc, char *argv[]) {
     int tamanho = atoi(argv[1]);
     Hash *h = hash_criar(tamanho);
-
-    for (int i = 0; i < tamanho; i++) {
+    int i = 0, collision_counter = 0;
+    for (; i < tamanho / 2; i++) {
         TipoElemento *r = (TipoElemento *)malloc(sizeof(TipoElemento));
         r->chave = randomInteger(0, tamanho);
-        hash_inserir(h, r);
+        hash_inserir(h, r, &collision_counter);
     }
 
-    hash_imprimir(h);
-    TipoElemento *r1 = NULL;
-    while (!hash_vazio(h)) {
-        int position = randomInteger(0, tamanho);
-        TipoElemento *r = NULL;
-
-        if (hash_remover(h, position, &r)) {
-            free(r);
-            r = NULL;
-        }
-    }
     hash_destruir(&h);
 }
 
